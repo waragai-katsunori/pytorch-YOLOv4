@@ -125,7 +125,7 @@ def main(engine_path, image_path, image_size):
 
         image_src = cv2.imread(image_path)
 
-        num_classes = 80
+        num_classes = 6
 
         for i in range(2):  # This 'for' loop is for speed check
                             # Because the first iteration is usually longer
@@ -136,7 +136,7 @@ def main(engine_path, image_path, image_size):
         elif num_classes == 80:
             namesfile = 'data/coco.names'
         else:
-            namesfile = 'data/names'
+            namesfile = 'data/x.names'
 
         class_names = load_class_names(namesfile)
         plot_boxes_cv2(image_src, boxes[0], savename='predictions_trt.jpg', class_names=class_names)
@@ -171,7 +171,9 @@ def detect(context, buffers, image_src, image_size, num_classes):
     trt_outputs = do_inference(context, bindings=bindings, inputs=inputs, outputs=outputs, stream=stream)
 
     print('Len of outputs: ', len(trt_outputs))
-
+    print("num_classes", num_classes)
+    print(trt_outputs[0].shape)
+    print(trt_outputs[1].shape)
     trt_outputs[0] = trt_outputs[0].reshape(1, -1, 1, 4)
     trt_outputs[1] = trt_outputs[1].reshape(1, -1, num_classes)
 
